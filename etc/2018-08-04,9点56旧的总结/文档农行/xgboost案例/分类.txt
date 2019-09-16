@@ -1,0 +1,45 @@
+from sklearn.datasets import load_iris
+import xgboost as xgb
+from xgboost import plot_importance
+from matplotlib import pyplot as plt
+from sklearn.model_selection import train_test_split
+
+# read in the iris data
+iris = load_iris()
+print(iris)
+
+X = iris.data
+y = iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# 训练模型
+'''
+学习xgboost的使用:
+在这里可以查询函数的含义:
+http://xgboost.apachecn.org/cn/latest/python/python_api.html?highlight=n_estimators
+下面是分类器的参数说明:
+max_depth:每个树的高度
+objective:是一个重要的函数,可以自己定义.这里面是多分类softmax
+'''
+model = xgb.XGBClassifier(max_depth=50, learning_rate=0.01, n_estimators=16000, 
+                          silent=True, objective='multi:softmax')
+model.fit(X_train, y_train)
+
+# 对测试集进行预测
+ans = model.predict(X_test)
+
+# 计算准确率
+cnt1 = 0
+cnt2 = 0
+for i in range(len(y_test)):
+    if ans[i] == y_test[i]:
+        cnt1 += 1
+    else:
+        cnt2 += 1
+
+print("Accuracy: %.2f %% " % (100 * cnt1 / (cnt1 + cnt2)))
+
+# 显示重要特征
+plot_importance(model)
+plt.show()

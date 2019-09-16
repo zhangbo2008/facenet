@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jul 15 17:48:36 2018
+
+@author: 张博
+"""
+
+'''
+右键属性,我们发现每一个图报里面有760张图片.足够了.如果不够还可以继续用keras的
+图片生成器来随机对图片进行平移和旋转放缩操作来对图像进行提升.提升术语说的意思是
+把一个图片通过这3个变换来生成很多相类似的图片,把这些图片也作为数据集,这样训练效果会跟好
+更入帮性.
+'''
+from os import *
+import shutil
+a='C:/Users/张博/Desktop/图片总结/all_pic'
+aa=listdir(a)
+print(a)
+a=[a+'/'+i for i in aa]
+print(a)
+for i in a:
+    #i 是当前文件夹
+    print(i)
+    tmp=listdir(i)
+    num=(760*2//3)
+    test=tmp[:num]
+    valid=tmp[num:]
+    mkdir(i+'/'+'test')
+    mkdir(i+'/'+'valid')
+    for ii in test:
+     shutil.move(i+'/'+ii,i+'/'+'test')          #移动文件
+    for ii in valid:
+     shutil.move(i+'/'+ii,i+'/'+'valid')          #移动文件
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

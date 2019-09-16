@@ -1,0 +1,98 @@
+
+
+from os import 
+import os
+#a='CUsers张博Desktop文件图片项目'
+#
+#
+#tmp=os.listdir(a)
+#io=walk(tmp)
+#print(io)
+#dir_all=[]
+#for i in tmp
+#    if path.isdir(a+''+i)
+#        now_dir=a+''+i
+#        dir_all.append(now_dir)
+#print(dir_all) #得到第一层所有目录
+#for i in range(1,11)
+#  i=str(i)
+#  b=a+'after_process'+i
+#  if os.path.exists(b)==False
+#   os.makedirs(a+'after_process'+i)#递归的创建目录
+import shutil
+
+#shutil.copyfile(1.txt,3.txt)
+   
+
+
+
+
+shutil.copyfile(1.txt,3.txt)
+
+path1='Epic2'
+tmp=os.listdir(path1)
+print(tmp)
+tmp=[path1+''+i for i in tmp ]
+print(os.path.isdir('Epic2'))
+tmp=[i for i in tmp if path.isdir(i)]
+print(tmp)
+print(len(tmp))
+a8=1
+for i in tmp
+    jj=i
+    now=listdir(jj)
+    now=[ii for ii in now if path.isdir(i+''+ii)]
+    now=[i+''+ii for ii in now ]
+    print(now)
+    
+#    os.rename()
+    for iii in now
+        a=os.path.abspath(iii)
+        print(a)
+        print(listdir(a))
+        for i in listdir(a)
+            print(a)
+            print(type(a))
+            out=a
+            out=out+''+i  #注意要写 转义
+            os.rename(out,out[-4]+str(a8)+'.png')
+            a8+=1
+            
+#终于何斌了.曹饿了7千多个图片
+            
+            
+        
+
+
+
+
+
+#for i in dir_all
+#    for j in os.listdir(i)
+#        tmp=i+''+j
+#        if path.isdir(tmp)
+#            #i是P1,j是G1   i是包的标记,j是分类
+#            k=os.listdir(tmp)
+##           k= ['R10_l.png', 'R10_r.png', 'R11_l.png', 'R11_r.png', 'R12_l.png', 'R12_r.png', 'R13_l.png', 'R13_r.png', 'R14_l.png', 'R14_r.png', 'R15_l.png', 'R15_r.png', 'R16_l.png', 'R16_r.png', 'R17_l.png', 'R17_r.png', 'R18_l.png', 'R18_r.png', 'R19_l.png', 'R19_r.png', 'R1_l.png', 'R1_r.png', 'R20_l.png', 'R20_r.png', 'R2_l.png', 'R2_r.png', 'R3_l.png', 'R3_r.png', 'R4_l.png', 'R4_r.png', 'R5_l.png', 'R5_r.png', 'R6_l.png', 'R6_r.png', 'R7_l.png', 'R7_r.png', 'R8_l.png', 'R8_r.png', 'R9_l.png', 'R9_r.png']
+#            print(k)
+##            for kk in k
+##                
+##                os.system(ren kk kk[-4]+i[-2]+'.png')
+##                print(kk)
+##                fffffffffffffffffff
+##            os.system()
+#          
+
+
+
+
+
+
+
+
+
+
+        
+        
+        
+        

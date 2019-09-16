@@ -1,0 +1,89 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 20 10:58:02 2018
+
+
+@author: 张博
+"""
+
+#读取csv最稳的方法:
+#f = open(r'C:\Users\张博\Desktop\展示\old.csv')
+#data = read_csv(f,header=None)
+
+
+
+
+
+'''
+画图模板:
+from matplotlib import pyplot
+data=[]
+pyplot.plot(data,color='black')
+pyplot.show()
+
+'''
+
+
+
+'''
+获取当前时间:
+import datetime
+nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')#现在
+nowTime=((nowTime)[:-3])
+print(nowTime)
+'''
+
+
+'''
+写文件的模板
+with open(r'c:/234/wucha.txt','w') as f:
+      wucha=str(wucha)
+      f.write(wucha)
+'''
+
+
+
+'''
+手动加断电的方法:raise 
+'''
+import pandas as pd
+
+#读取csv最稳的方法:
+f = open(r'C:\Users\张博\Desktop\out.csv')
+data = pd.read_csv(f,header=None)
+
+
+list1=[6]*24+[7]*24+[1]*24+[2]*24+[3]*24+[4]*24+[5]*24
+
+data['2']=(list1*len(data))[:len(data)]
+
+
+print(data[1][1:])
+
+print(data[3][1:])
+tmp=data[3][1:]
+new=(list1*len(tmp))[:len(tmp)]
+print(new)
+print(data)
+
+
+
+
+#重新合并很方便
+
+df = pd.DataFrame({
+        'HH':data[1][1:],
+        'week':new,
+        'Sum':data[3][1:]
+        }, 
+                   columns =['HH','week','Sum'])
+print(df)
+df.to_csv(r'E:\output_nonghang\out2.csv')
+print('over')
+
+
+
+
+
+
+

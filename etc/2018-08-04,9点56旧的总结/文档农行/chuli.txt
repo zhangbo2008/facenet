@@ -1,0 +1,265 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 20 10:58:02 2018
+
+
+@author: 张博
+"""
+
+#读取csv最稳的方法:
+#f = open(r'C:\Users\张博\Desktop\展示\old.csv')
+#data = read_csv(f,header=None)
+
+
+
+
+
+'''
+画图模板:
+from matplotlib import pyplot
+data=[]
+pyplot.plot(data,color='black')
+pyplot.show()
+
+'''
+
+
+
+'''
+获取当前时间:
+import datetime
+nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')#现在
+nowTime=((nowTime)[:-3])
+print(nowTime)
+'''
+
+
+'''
+写文件的模板
+with open(r'c:/234/wucha.txt','w') as f:
+      wucha=str(wucha)
+      f.write(wucha)
+'''
+
+
+
+'''
+手动加断电的方法:raise 
+'''
+
+
+
+
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jul 19 10:14:10 2018
+
+@author: 张博
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul 17 09:26:35 2018
+
+@author: 张博
+"""
+
+
+
+import pandas as pd
+
+#把所有数据拼起来从1到30,这次先不把星期6,日排除
+print(3423)
+list_all=[]
+for i in range(1,32):
+     if i<10:
+         index_now=str(0)+str(i)
+     else:
+         index_now=str(i)
+     path='C:/Users/张博/Desktop/201707/201707'+index_now+'.csv'
+     #路径带中文会报错,改用下面的方法
+     f = open(path)
+     tmp=pd.read_csv(f)
+     f.close()
+     list_all.append(tmp)
+all_data=pd.concat(list_all)
+
+
+print(34234)
+
+#选取部分数据,注意'ret_code'里面有空格
+
+#把省份拆开,对不同省份做不同的预测.最后需要预测哪个省份就把哪个省份的数据扔给那个省份的训练器
+data=all_data #现在data是全部30天的数据了,经过测试还是用两个条件一起对data做拆分更好.比只用Province好.
+a=data['Province']==2 
+b=data['ret_code']=='N         '
+
+c=a&b
+tmp=data[c]
+#tmp 就是99,N这个条件下的数据汇总
+
+#下面把小时合并起来
+#首先得到所有可能结果的分类然后query即可
+
+print('over')
+
+print(set(tmp['YY']))
+list=[]
+for yy in set(tmp['YY']):
+    for mm in set(tmp['MM']):
+        for dd in set(tmp['DD']):
+            for hh in set(tmp['HH']):
+                now=tmp.query('YY==@yy and MM==@mm and DD==@dd and HH==@hh')
+                a=now['sum(BPC_BOEING_201707_MIN.cnt)'].sum()
+                #创建一个表
+                #下面就是创建一个表的写法
+                df = pd.DataFrame([{'YY':yy, 'MM':mm,'DD':dd,'HH':hh,'Province':2,'ret_code':'N', 'Sum':a}]
+                                  ,columns =['YY','MM','DD','HH','Province','ret_code','Sum'])
+                
+                list.append(df)
+a=pd.concat(list)
+#a.to_csv(r'e:\output_nonghang\output998.csv')
+#到这里得到了700多行数据,下面利用这700多行数据预测31号24小时的99_N的交易量
+
+print(a)
+
+'''
+奇怪存一下读一下才好用.非常神秘!!!!
+'''
+print(type(a))                
+a.to_csv(r'e:\output_nonghang\output998.csv')
+print(type(a))
+a=pd.read_csv(r'e:\output_nonghang\output998.csv')
+
+
+
+
+import pandas as pd
+
+
+
+
+a['holiday']=0
+#a=a.loc(a['DD'].isin([1,2,8,9,15,16,22,23,29,30]))
+#help(a)
+#print(a)
+#遍历
+
+
+for i in range(len(a)):
+    if a.loc[i,'DD'] in [1,2,8,9,15,16,22,23,29,30]:
+        a.loc[i,'holiday']=1
+
+a.to_csv(r'e:\output_nonghang\out22.csv')
+a=a[['DD','HH','holiday','Sum']]
+print(len(a))
+print(len(a.loc[0]))
+a.to_csv(r'e:\output_nonghang\out22.csv')
+print(a)
+
+#下面利用这个数据,总共4个特征来对最后一个特征sum来做预测.
+
+'''
+跑完这个程序我们得到饿了out.csv
+这个数据表示99,N这个类型的数据他的4个特征组成的数据
+'''
+
+
+
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 20 10:58:02 2018
+
+
+@author: 张博
+"""
+
+#读取csv最稳的方法:
+#f = open(r'C:\Users\张博\Desktop\展示\old.csv')
+#data = read_csv(f,header=None)
+
+
+
+
+
+'''
+画图模板:
+from matplotlib import pyplot
+data=[]
+pyplot.plot(data,color='black')
+pyplot.show()
+
+'''
+
+
+
+'''
+获取当前时间:
+import datetime
+nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')#现在
+nowTime=((nowTime)[:-3])
+print(nowTime)
+'''
+
+
+'''
+写文件的模板
+with open(r'c:/234/wucha.txt','w') as f:
+      wucha=str(wucha)
+      f.write(wucha)
+'''
+
+
+
+'''
+手动加断电的方法:raise 
+'''
+import pandas as pd
+
+#读取csv最稳的方法:
+f = open(r'e:\output_nonghang\out22.csv')
+data = a
+print(data)
+
+
+list1=[1]*24+[2]*24+[0]*24+[0]*24+[0]*24+[0]*24+[0]*24
+
+
+
+
+tmp=data['HH']
+new=(list1*len(tmp))[:len(tmp)]
+
+
+
+#重新合并很方便
+
+df = pd.DataFrame({
+        'HH':data['HH'],
+        'week':new,
+        'Sum':data['Sum'],
+        }, 
+                   columns =['HH','week','Sum'])
+print(df)
+df.to_csv(r'E:\output_nonghang\out2new.csv')
+print('over')
+print(df)
+raise
+
+
+
+
+
+
+
+
+
+
+
+
+
+

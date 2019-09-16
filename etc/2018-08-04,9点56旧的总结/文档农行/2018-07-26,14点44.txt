@@ -1,0 +1,719 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 20 10:58:02 2018
+
+
+@author: 张博
+"""
+
+#读取csv最稳的方法:
+#f = open(r'C:\Users\张博\Desktop\展示\old.csv')
+#data = read_csv(f,header=None)
+
+
+
+
+
+'''
+画图模板:
+from matplotlib import pyplot
+data=[]
+pyplot.plot(data,color='black')
+pyplot.show()
+
+'''
+
+
+
+'''
+获取当前时间:
+import datetime
+nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')#现在
+nowTime=((nowTime)[:-3])
+print(nowTime)
+'''
+
+
+'''
+写文件的模板
+with open(r'c:/234/wucha.txt','w') as f:
+      wucha=str(wucha)
+      f.write(wucha)
+'''
+
+
+
+'''
+手动加断电的方法:raise 
+'''
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 20 10:58:02 2018
+
+
+@author: 张博
+"""
+
+
+
+
+
+
+
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul 17 10:54:38 2018
+
+@author: 张博
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 16 17:18:57 2018
+
+@author: 张博
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+#2018-07-23,22点54对学习率参数进行for循环来学习哪个最好RATE
+for i in range((1)):
+    
+    import os
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0' #使用 GPU 0
+    
+    import tensorflow as tf
+    from keras.backend.tensorflow_backend import set_session
+    
+    config = tf.ConfigProto()
+    config.gpu_options.allocator_type = 'BFC' #A "Best-fit with coalescing" algorithm, simplified from a version of dlmalloc.
+    config.gpu_options.per_process_gpu_memory_fraction = 1.
+    config.gpu_options.allow_growth = True
+    set_session(tf.Session(config=config))
+    
+    
+    
+    
+    
+    
+    
+    
+    #老外的教程:非常详细,最后的多变量,多step模型应该是最终实际应用最好的模型了.也就是这个.py文件写的内容
+    #https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/
+    
+    '''
+    SUPER_PARAMETER:一般代码习惯把超参数写最开始位置,方便修改和查找
+    '''
+    EPOCH=100
+    LOOK_BACK=24*2
+    n_features = 3         #这个问题里面这个参数不用动,因为只有2个变量
+    RATE=0.55
+    shenjing=62
+    n_hours = LOOK_BACK
+    
+    
+    
+    
+    
+    import pandas as pd
+    
+    from pandas import read_csv
+    from datetime import datetime
+    # load data
+    def parse(x):
+    	return datetime.strptime(x, '%Y %m %d %H')
+    data = read_csv(r'E:\output_nonghang\out2.csv')
+    
+    #应该把DD给删了,天数没用
+    #切片和concat即可
+    
+    
+    tmp1=data.iloc[:,2:3]
+    tmp2=data.iloc[:,3]
+    tmp3=data.iloc[:,1]
+
+    data.to_csv('c:/234/out00000.csv')
+    
+#    for i in range(len(tmp3)):
+#        if tmp3[i] in range(12,13):
+#            tmp3[i]=1
+#        if tmp3[i] in range(13,14):
+#            tmp3[i]=2
+#        else:
+#            tmp3[i]=0
+
+
+    #加一个预处理判断.判断数据奇异的点.
+    #方法是:遍历一遍整个数据,如果这个点的数据比同时工作日或者周末的情况的mean的0.2还低
+    #就说明这个点错了.用上面同比情况mean来替代.
+    #2018-07-25,21点52跑出来百分之5.8错误率,说明这个修正的初始化过程非常重要!!不然就在
+    #8左右徘徊.
+    '''
+    应该是更好的一种修改坏点的方法:
+    比如7月23日3点的数据是错的.那么我们就用7月1日到7月23日2点的数据做训练,然后来预测7越23日3点的数据
+    把这个7月23日3点预测到的数据当成真是数据来给7月23日3点.后面的坏点都同样处理.
+    
+    比如如果7月23日3点和4点数据都坏了.(也就是显然跟真实数据差很多,我的判断是比同期的数据0.4呗还低)
+    那么我先预测3点的数据,然后把这个预测到的数据当真实值,4点的数据用上前面预测到的3点的值继续跑.来
+    预测4点的值.这样就把3,4点的值都修正过来了.当然时间上会很慢,比下面使用的平均数替代法要多跑2次深度学习.
+    '''
+
+    for i in range(len(data)):
+        hour=data.iloc[i]['HH']
+        week=data.iloc[i]['week']
+        tmp56=data.query('HH == '+str(hour) +' and '+ 'week=='+str(week)+' and '+'index!='+str(i))
+        tmp_sum=tmp56['Sum'].mean()
+        
+        if data.iloc[i]['Sum']< tmp_sum *0.4:
+            data.iloc[i]['Sum']=tmp_sum 
+            print('修改了如下行,因为他是异常点')
+            print(i)
+            
+            
+    
+    #修改完毕
+
+
+    tmp1=data.iloc[:,2:3]
+    tmp2=data.iloc[:,3]
+    tmp3=data.iloc[:,1]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+    
+    data=pd.concat([tmp2,tmp3,tmp1],axis=1)
+    print(data)
+    data.to_csv('c:/234/out00000.csv')
+    
+    
+    #因为下面的模板是把预测值放在了第一列.所以对data先做一个变换.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #data.to_csv('pollution.csv')
+    
+    
+    
+    
+    
+    
+    from pandas import read_csv
+    from matplotlib import pyplot
+    # load dataset
+    dataset = data
+    values = dataset.values
+    
+    
+    
+    ## specify columns to plot
+    #groups = [0, 1, 2, 3, 5, 6, 7]
+    #i = 1
+    
+    
+    from pandas import read_csv
+    from matplotlib import pyplot
+    # load dataset
+    #dataset = read_csv('pollution.csv', header=0, index_col=0)
+    ##print(dataset.head())
+    #values = dataset.values
+    # specify columns to plot
+    #groups = [0, 1, 2, 3, 5, 6, 7]
+    #i = 1
+    # plot each column
+    #pyplot.figure()
+    #图中每一行是一个列数据的展现.所以一共有7个小图,对应7个列指标的变化.
+    #for group in groups:
+    #	pyplot.subplot(len(groups), 1, i)
+    #	pyplot.plot(values[:, group])
+    #	pyplot.title(dataset.columns[group], y=0.5, loc='right')
+    #	i += 1
+    ##pyplot.show()
+    
+    
+    
+    from math import sqrt
+    from numpy import concatenate
+    from matplotlib import pyplot
+    from pandas import read_csv
+    from pandas import DataFrame
+    from pandas import concat
+    from sklearn.preprocessing import MinMaxScaler
+    from sklearn.preprocessing import LabelEncoder
+    from sklearn.metrics import mean_squared_error
+    from keras.models import Sequential
+    from keras.layers import Dense
+    from keras.layers import LSTM
+    # load dataset
+    
+    
+    # integer encode direction
+    #把标签标准化而已.比如把1,23,5,7,7标准化之后就变成了0,1,2,3,3
+    #print('values')
+    #print(values[:5])
+    #encoder = LabelEncoder()
+    #values[:,4] = encoder.fit_transform(values[:,4])
+    ## ensure all data is float
+    #values = values.astype('float32')
+    #print('values_after_endoding')
+    #numpy 转pd
+    import pandas as pd
+    #pd.DataFrame(values).to_csv('values_after_endoding.csv')
+    #从结果可以看出来encoder函数把这种catogorical的数据转化成了数值类型,
+    #方便做回归.
+    #print(values[:5])
+    # normalize features,先正规化.
+    
+    
+    
+    
+    #这里面系数多尝试(0,1) (-1,1) 或者用其他正则化方法.
+    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaled = scaler.fit_transform(values)
+    print('正规化之后的数据')
+    
+    pd.DataFrame(scaled).to_csv('values_after_normalization.csv')
+    
+    # frame as supervised learning
+    
+    
+    
+    
+    # convert series to supervised learning
+    #n_in:之前的时间点读入多少,n_out:之后的时间点读入多少.
+    #对于多变量,都是同时读入多少.为了方便,统一按嘴大的来.
+    #print('测试shift函数')
+    #
+    #df = DataFrame(scaled)
+    #print(df)      # 从测试看出来shift就是数据同时向下平移,或者向上平移.
+    #print(df.shift(2))
+    def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
+    	n_vars = 1 if type(data) is list else data.shape[1]
+    	df = DataFrame(data)
+    	cols, names = [],[]
+    	# input sequence (t-n, ... t-1)
+    	for i in range(n_in, 0, -1):
+    		cols.append(df.shift(i))
+    		names += [('var%d(时间:t-%s)' % (j+1, i)) for j in range(n_vars)]
+    	# forecast sequence (t, t+1, ... t+n)
+    	for i in range(0, n_out):
+    		cols.append(df.shift(-i))
+    		if i == 0:
+    			names += [('var%d(时间:t)' % (j+1)) for j in range(n_vars)]
+    		else:
+    			names += [('var%d(时间:t+%d)' % (j+1, i)) for j in range(n_vars)]
+    	# put it all together
+    	agg = concat(cols, axis=1)
+    	agg.columns = names
+    	# drop rows with NaN values
+    	if dropnan:
+    		agg.dropna(inplace=True)
+    	return agg
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #series_to_supervised函数把多变量时间序列的列拍好.
+    
+    reframed = series_to_supervised(scaled, LOOK_BACK, 1)
+    
+    # drop columns we don't want to predict
+    #我们只需要预测var1(t)所以把后面的拍都扔了.
+    
+    
+    
+    
+    
+    
+    
+    
+    # split into train and test sets
+    values = reframed.values
+    n_train_hours = int(len(scaled)*0.75)
+    train = values[:n_train_hours, :]
+    test = values[n_train_hours:, :]
+    # split into input and outputs
+    n_obs = n_hours * n_features
+    train_X, train_y = train[:, :n_obs], train[:, -n_features]
+    test_X, test_y = test[:, :n_obs], test[:, -n_features]
+    #print(train_X.shape, len(train_X), train_y.shape)
+    #print(test_X.shape, len(test_X), test_y.shape)
+    #print(train_X)
+    #print(9999999999999999)
+    #print(test_X)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #这里依然是用timesteps=1
+    #从这个reshape可以看出来,之前的单变量的feature长度=look_back
+    #                       现在的多变量feature长度=look_back*len(variables).就这一个区别.
+    # reshape input to be 3D [samples, timesteps, features]
+    
+    
+    #关于下面2行的参数设置说明:
+    #经过测试:reshape参数train_X.shape[0], n_hours,n_features最好,需要24*100s来训练一次
+    #reshape参数train_X.shape[0],1, n_hours*n_features最好,会对峰值的判断差一点,但是速度快6呗
+    train_X = train_X.reshape((train_X.shape[0], n_hours,n_features))
+    test_X = test_X.reshape((test_X.shape[0],  n_hours,n_features))
+    
+    #print(train_X.shape, train_y.shape, test_X.shape, test_y.shape)
+    
+    '''
+    网络结构比较小的时候，效率瓶颈在CPU与GPU数据传输，这个时候只用cpu会更快。
+    网络结构比较庞大的时候，gpu的提速就比较明显了。
+    
+    
+    :显存和内存一样,属于随机存储,关机后自动清空。
+    '''
+    
+    
+    
+    print('开始训练')
+    
+    # design network
+    model = Sequential()
+    import keras
+    from keras import regularizers
+    
+    from keras import optimizers
+    
+    import keras
+    
+    model.add(keras.layers.recurrent.LSTM(shenjing, input_shape=(train_X.shape[1], train_X.shape[2]),activation='tanh', 
+                                         recurrent_activation='hard_sigmoid',
+                                         kernel_initializer='random_uniform',
+                                         bias_initializer='zeros',
+                                         kernel_regularizer=regularizers.l2(0.01),
+                                         recurrent_regularizer=regularizers.l2(0.01)
+                                         , bias_regularizer=regularizers.l2(0.01), 
+                                         dropout=0., recurrent_dropout=0.
+                                         ,return_sequences=False))
+    
+    #model.add(Dense(60, activation='tanh',kernel_regularizer=regularizers.l2(0.01),
+    #                bias_regularizer=regularizers.l2(0.01)))
+    
+    # returns a sequence of vectors of dimension 32
+    #model.add(LSTM(32))  # return a single vector of dimension 32
+    
+    def schedule(epoch):
+        rate=RATE
+        if epoch<3:
+            return 0.002  #开始学的快一点
+        if epoch<10:
+            return 0.001
+        if epoch<15:
+            return 0.001*0.5
+        if epoch<20:
+            return 0.001*rate
+        if epoch<30:
+            return 0.001*rate**2
+        if epoch<70:
+           return 0.001*rate**3
+        else:
+            return 0.001*rate**4
+    
+    
+    
+    
+    
+    #发现这个层是必须加的.
+#    model.add(keras.layers.core.Dropout(0.2, noise_shape=None, seed=None))
+    
+    
+    
+    
+    
+    
+    
+    learning_rate=keras.callbacks.LearningRateScheduler(schedule)
+    learning_rate2=keras.callbacks.ReduceLROnPlateau(factor=0.5)
+    #input_dim：输入维度，当使用该层为模型首层时，应指定该值（或等价的指定input_shape)
+    
+#    model.add(Dense(1000,activation='tanh'),)
+    model.add(Dense(1))
+    
+    #loss:mse,mae,mape,msle
+    adam = optimizers.Adam(lr=0.001, clipnorm=.5)
+    model.compile(loss='mape', optimizer=adam,metrics=['mae'])
+    # fit network
+    #参数里面写validation_data就不用自己手动predict了,可以直接画histrory图像了
+    history = model.fit(train_X, train_y, epochs=EPOCH, batch_size=1,
+                        validation_data=(test_X, test_y),
+                        verbose=1, shuffle=False,callbacks=[learning_rate,
+             learning_rate2], )
+    # plot history
+    #pyplot.plot(history.history['loss'], label='train')
+    #pyplot.plot(history.history['val_loss'], label='test')
+    #pyplot.legend()
+    #pyplot.show()
+    
+    
+    
+    #训练好后直接做预测即可.
+    # make a prediction
+    yhat = model.predict(test_X)         #yhat 这个变量表示y上面加一票的数学符号
+                                 #在统计学里面用来表示算法作用到test上得到的预测值
+    test_X = test_X.reshape((test_X.shape[0], n_hours*n_features))
+    # invert scaling for forecast
+    
+    
+    
+    
+    
+    
+    
+    #因为之前的scale是对初始数据做scale的,inverse回去还需要把矩阵的型拼回去.
+    inv_yhat = concatenate((yhat, test_X[:, -(n_features-1):]), axis=1)
+    inv_yhat = scaler.inverse_transform(inv_yhat)
+    inv_yhat = inv_yhat[:,0]#inverse完再把数据扣出来.多变量这个地方需要的操作要多点
+    # invert scaling for actual
+    
+    
+    
+    test_y = test_y.reshape((len(test_y), 1))
+    inv_y = concatenate((test_y, test_X[:, -(n_features-1):]), axis=1)
+    inv_y = scaler.inverse_transform(inv_y)
+    inv_y = inv_y[:,0]
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    with open(r'c:/234/inv_y.txt','w') as f:
+          inv_y1=str(inv_y)
+          f.write(inv_y1)
+    with open(r'c:/234/inv_yhat.txt','w') as f:
+          inv_yhat1=str(inv_yhat)
+          f.write(inv_yhat1)
+    
+    
+    
+    # calculate RMSE
+    rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
+#    print('RATE:')
+#    print(RATE)
+    print('输出abs差百分比指标:')
+    #这个污染指数还有0的.干扰非常大
+    #print(inv_y.shape)
+    #print(inv_yhat.shape)
+    wucha=abs(inv_y-inv_yhat)/(inv_y)
+    #print(wucha)
+    '''
+    下面把得到的abs百分比误差写到 文件里面
+    '''
+
+    #with open(r'c:/234/wucha.txt','w') as f:
+    #      print(type(wucha))
+    #      wucha2=list(wucha)
+    #      wucha2=str(wucha2)
+    #      f.write(wucha2)
+    
+    with open(r'c:/234/sumary.txt','a') as f:
+          rate=str(RATE)
+          f.write(rate+'，')
+          shenjing=str(shenjing)
+          f.write(shenjing)
+          f.write(',')
+          wucha2=wucha.mean()
+          wucha2=str(wucha2)
+          f.write(wucha2)
+          f.write('.')
+          f.write('\n')
+    
+    
+    wucha=wucha.mean()
+    print(wucha)
+    
+    
+    
+    inv_y=inv_y
+    inv_yhat=inv_yhat
+    
+    #print('Test RMSE: %.3f' % rmse)
+    import numpy as np
+    
+    from matplotlib import pyplot
+    pyplot.rcParams['figure.figsize'] = (20, 3) # 设置figure_size尺寸
+    
+    pyplot.rcParams['image.cmap'] = 'gray' # 
+    pyplot.plot(inv_y,color='black',linewidth = 0.7)
+    pyplot.plot(inv_yhat     ,color='red',linewidth = 0.7)
+    
+    pyplot.show()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    '''
+    获取当前时间:
+    import datetime
+    nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')#现在
+    nowTime=((nowTime)[:-3])
+    print(nowTime)
+    '''
+    
+    
+    '''
+    写文件的模板
+    with open(r'c:/234/wucha.txt','w') as f:
+          wucha=str(wucha)
+          f.write(wucha)
+    '''
+    
+    
+    
+    
+    
+    
+    '''
+    手动加断电的方法:raise NameError #这种加断点方法靠谱
+    '''
+    
+    '''
+    画图模板:
+    import numpy as np
+    
+    from matplotlib import pyplot
+    pyplot.rcParams['figure.figsize'] = (20, 3) # 设置figure_size尺寸
+    
+    pyplot.rcParams['image.cmap'] = 'gray' # 
+    pyplot.plot(inv_y,color='black',linewidth = 0.7)
+    
+    
+    pyplot.show()
+    
+    
+    '''
+    
+    #读取csv最稳的方法:
+    #f = open(r'C:\Users\张博\Desktop\展示\old.csv')
+    #data = read_csv(f,header=None)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
